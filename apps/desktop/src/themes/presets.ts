@@ -483,6 +483,40 @@ const OBSIDIAN_CSS = `
     0 1px 2px color-mix(in srgb, #000 10%, transparent),
     0 16px 40px -16px color-mix(in srgb, #000 40%, transparent);
 }
+
+/* Quiet chrome: sentence-case labels instead of tracked-out uppercase. */
+.group\\/section-label > span,
+.group\\/tab .uppercase {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.group\\/section-label > span {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ui-text-tertiary);
+}
+
+.group\\/tab {
+  font-size: 0.75rem;
+}
+
+/* User turns: filled, borderless, right-hugging bubbles. */
+.composer-human-message {
+  width: fit-content;
+  max-width: min(100%, 36rem);
+  margin-inline-start: auto;
+  border-color: transparent;
+  border-radius: 1.25rem;
+}
+
+/* Hero wordmark: tight geometric sans instead of the display serif. */
+.wordmark {
+  font-family: 'Inter', var(--dt-font-sans);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  text-transform: none;
+}
 `
 
 /**
