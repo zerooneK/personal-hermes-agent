@@ -508,6 +508,7 @@ const OBSIDIAN_CSS = `
   margin-inline-start: auto;
   border-color: transparent;
   border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--dt-foreground) 7%, var(--dt-background));
 }
 
 /* Hero wordmark: tight geometric sans instead of the display serif. */
@@ -534,7 +535,7 @@ export const obsidianTheme: DesktopTheme = {
     foreground: '#0A0A0A',
     card: '#FFFFFF',
     cardForeground: '#0A0A0A',
-    muted: '#F4F4F5',
+    muted: '#F0F0F1',
     mutedForeground: '#71717A',
     popover: '#FFFFFF',
     popoverForeground: '#0A0A0A',
@@ -553,7 +554,7 @@ export const obsidianTheme: DesktopTheme = {
     destructiveForeground: '#FFFFFF',
     sidebarBackground: '#F7F7F8',
     sidebarBorder: obsidianInk(6),
-    userBubble: '#F2F2F3',
+    userBubble: '#EBEBED',
     userBubbleBorder: obsidianInk(4)
   },
   darkColors: {
