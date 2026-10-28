@@ -441,7 +441,125 @@ export const slateTheme: DesktopTheme = {
   }
 }
 
+const obsidianInk = (pct: number) => `color-mix(in srgb, #0A0A0A ${pct}%, transparent)`
+const obsidianChalk = (pct: number) => `color-mix(in srgb, #FFFFFF ${pct}%, transparent)`
+
+// Geometry for the obsidian skin. Injected as the skin's customCSS, so it only
+// exists while obsidian is active and every other skin keeps the stock layout.
+const OBSIDIAN_CSS = `
+:root {
+  --radius: 1rem;
+  --radius-scalar: 0.9;
+  --sidebar-width: 16.5rem;
+  --sidebar-content-inline-padding: 0.875rem;
+  --composer-width: 46rem;
+  --composer-control-size: 1.75rem;
+  --composer-control-primary-size: 2rem;
+  --composer-surface-pad-x: 0.75rem;
+  --composer-surface-pad-y: 0.5rem;
+  --composer-input-min-height: 1.875rem;
+  --composer-fallback-height: 3.25rem;
+  --composer-shell-pad-block-end: 1rem;
+  --conversation-text-base-size: 0.9375rem;
+  --conversation-base-line-height: 1.5rem;
+  --conversation-turn-gap: 0.625rem;
+  --turn-block-gap: 1rem;
+  --paragraph-gap: 0.85rem;
+}
+
+[data-slot='composer-root'] {
+  --composer-fill: var(--dt-card);
+  border-radius: 1.625rem;
+}
+
+[data-slot='composer-root'][data-thread-scrolled-up] {
+  --composer-fill: color-mix(in srgb, var(--dt-card) 94%, transparent);
+}
+
+[data-slot='composer-surface'] {
+  border-radius: 1.625rem;
+  border-color: var(--ui-stroke-tertiary) !important;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, #000 10%, transparent),
+    0 16px 40px -16px color-mix(in srgb, #000 40%, transparent);
+}
+`
+
+/**
+ * Obsidian — monochrome near-black. Pure neutrals with no hue accent: white
+ * (black in light mode) is the only accent, so focus rings, the send button
+ * and active rows read as plain light-on-dark. Ships its own geometry via
+ * customCSS: rounder surfaces, a floating pill composer, roomier type.
+ */
+export const obsidianTheme: DesktopTheme = {
+  name: 'obsidian',
+  label: 'Obsidian',
+  description: 'Monochrome near-black with a floating pill composer',
+  colors: {
+    background: '#FFFFFF',
+    foreground: '#0A0A0A',
+    card: '#FFFFFF',
+    cardForeground: '#0A0A0A',
+    muted: '#F4F4F5',
+    mutedForeground: '#71717A',
+    popover: '#FFFFFF',
+    popoverForeground: '#0A0A0A',
+    primary: '#0A0A0A',
+    primaryForeground: '#FAFAFA',
+    secondary: '#F4F4F5',
+    secondaryForeground: '#18181B',
+    accent: '#EFEFF0',
+    accentForeground: '#0A0A0A',
+    border: obsidianInk(10),
+    input: obsidianInk(14),
+    ring: obsidianInk(40),
+    midground: '#0A0A0A',
+    composerRing: obsidianInk(22),
+    destructive: '#DC2626',
+    destructiveForeground: '#FFFFFF',
+    sidebarBackground: '#F7F7F8',
+    sidebarBorder: obsidianInk(6),
+    userBubble: '#F2F2F3',
+    userBubbleBorder: obsidianInk(4)
+  },
+  darkColors: {
+    background: '#0A0A0A',
+    foreground: '#F5F5F5',
+    card: '#151515',
+    cardForeground: '#F5F5F5',
+    muted: '#1A1A1A',
+    mutedForeground: '#8C8C8C',
+    popover: '#171717',
+    popoverForeground: '#F5F5F5',
+    primary: '#FAFAFA',
+    primaryForeground: '#0A0A0A',
+    secondary: '#1F1F1F',
+    secondaryForeground: '#E5E5E5',
+    accent: '#1C1C1C',
+    accentForeground: '#F5F5F5',
+    border: obsidianChalk(9),
+    input: obsidianChalk(12),
+    ring: obsidianChalk(45),
+    midground: '#E5E5E5',
+    composerRing: obsidianChalk(20),
+    destructive: '#EF4444',
+    destructiveForeground: '#FFFFFF',
+    sidebarBackground: '#000000',
+    sidebarBorder: obsidianChalk(6),
+    userBubble: '#1C1C1C',
+    userBubbleBorder: obsidianChalk(5)
+  },
+  typography: {
+    fontSans: `"Inter", ${SYSTEM_SANS}`,
+    fontMono: SYSTEM_MONO,
+    fontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+    letterSpacing: '-0.005em'
+  },
+  customCSS: OBSIDIAN_CSS
+}
+
 export const BUILTIN_THEMES: Record<string, DesktopTheme> = {
+  obsidian: obsidianTheme,
   nous: nousTheme,
   github: githubTheme,
   catppuccin: catppuccinTheme,
