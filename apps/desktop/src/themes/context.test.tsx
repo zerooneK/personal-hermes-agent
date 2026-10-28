@@ -348,7 +348,8 @@ describe('ThemeProvider customCSS injection', () => {
       )
     )
 
-    expect(customStyleEl()?.textContent).toBe('.chat-input { font-size: 18px; }')
+    // Layered on top of the default skin's own shipped CSS, never replacing it.
+    expect(customStyleEl()?.textContent?.endsWith('.chat-input { font-size: 18px; }')).toBe(true)
   })
 })
 
