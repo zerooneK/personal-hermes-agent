@@ -1,4 +1,5 @@
 import { useStore } from '@nanostores/react'
+import type { ReactNode } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Codicon } from '@/components/ui/codicon'
@@ -53,6 +54,7 @@ export function ComposerControls({
   canSubmit,
   cardWaiting = false,
   compactModelPill = false,
+  contextMeter,
   conversation,
   disabled,
   foldVoice = false,
@@ -73,6 +75,8 @@ export function ComposerControls({
   /** A card parked on the session takes typed text as its answer, so queueing that text would leave the card waiting. */
   cardWaiting?: boolean
   compactModelPill?: boolean
+  /** This session's context-window meter, shown beside the model it measures. */
+  contextMeter?: ReactNode
   conversation: ConversationProps
   disabled: boolean
   foldVoice?: boolean
@@ -147,6 +151,7 @@ export function ComposerControls({
         <>
           {hideModelPill ? null : (
             <>
+              {contextMeter}
               <ModelPill compact={compactModelPill} disabled={disabled} model={state.model} />
               {compactModelPill ? null : <ReasoningPill disabled={disabled} model={state.model} />}
             </>

@@ -14,11 +14,13 @@ import {
   $currentReasoningEffort,
   $currentReasoningEffortWire,
   $currentServiceTier,
+  $currentUsage,
   $messages,
   $selectedStoredSessionId,
   $turnStartedAt
 } from '@/store/session'
 import { $sessionStates } from '@/store/session-states'
+import type { UsageStats } from '@/types/hermes'
 
 import { lastVisibleMessageIsUser } from './thread-loading'
 
@@ -67,7 +69,13 @@ export interface SessionView {
   $reasoningEffortPending: ReadableAtom<boolean>
   /** Gateway-reported level the route sends for `$reasoningEffort` ('' = unknown). */
   $reasoningEffortWire: ReadableAtom<string>
+  /** This session's streamed token usage (context occupancy included), so the
+   *  composer's context meter describes its own surface, never the global mirror. */
+  $usage?: ReadableAtom<UsageStats>
 }
+
+/** Stable empty reading: a fresh `{...}` per read would bust downstream memos. */
+export const EMPTY_SESSION_USAGE: UsageStats = { calls: 0, input: 0, output: 0, total: 0 }
 
 /** The active session's own slice, or `undefined` while it's a draft. */
 const $primaryState = computed([$activeSessionId, $sessionStates], (runtimeId, states) =>
@@ -133,7 +141,8 @@ export const PRIMARY_SESSION_VIEW: SessionView = {
   $reasoningEffortWire: primaryField<string>(state => state.reasoningEffortWire ?? '', $currentReasoningEffortWire),
   $runtimeId: $activeSessionId,
   $storedId: $selectedStoredSessionId,
-  $turnStartedAt: primaryField<number | null>(state => state.turnStartedAt, $turnStartedAt)
+  $turnStartedAt: primaryField<number | null>(state => state.turnStartedAt, $turnStartedAt),
+  $usage: primaryField<UsageStats>(state => state.usage ?? EMPTY_SESSION_USAGE, $currentUsage)
 }
 
 const SessionViewContext = createContext<SessionView>(PRIMARY_SESSION_VIEW)

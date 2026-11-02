@@ -57,6 +57,7 @@ import {
   slashArgStage
 } from './composer-utils'
 import { ContextMenu } from './context-menu'
+import { ContextMeter } from './context-meter'
 import { COMPOSER_AREAS } from './contrib'
 import { ComposerControls } from './controls'
 import { ComposerDirectiveActions } from './directive-actions'
@@ -1132,6 +1133,9 @@ export function ChatBar({
       canSubmit={canSubmit}
       cardWaiting={cardWaiting}
       compactModelPill={poppedOut || compactPill}
+      contextMeter={
+        <ContextMeter busy={busy} disabled={disabled} requestGateway={requestBusyConfig} sessionId={sessionId ?? null} />
+      }
       conversation={{
         active: voiceConversationActive,
         level: conversation.level,
