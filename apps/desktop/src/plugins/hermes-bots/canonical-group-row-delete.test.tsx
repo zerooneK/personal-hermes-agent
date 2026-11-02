@@ -113,6 +113,39 @@ it('keeps the row and shows the gateway refusal when the disband fails', async (
   expect(notify).not.toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }))
 })
 
+it('retries the listing while the gateway socket is still connecting at boot', async () => {
+  vi.useFakeTimers({ shouldAdvanceTime: true })
+
+  try {
+    const ready = requestProfile.getMockImplementation()!
+    let failures = 2
+    requestProfile.mockImplementation(async (...args: Parameters<typeof ready>) => {
+      if (failures > 0) {
+        failures -= 1
+        throw new Error('Hermes gateway is not connected')
+      }
+
+      return ready(...args)
+    })
+
+    render(<CanonicalGroupList onOpen={vi.fn()} />)
+    await vi.advanceTimersByTimeAsync(4000)
+
+    expect(await screen.findByRole('button', { name: 'Launch crew' })).toBeTruthy()
+    expect(screen.queryByRole('alert')).toBeNull()
+  } finally {
+    vi.useRealTimers()
+  }
+})
+
+it('shows other listing errors without retrying', async () => {
+  requestProfile.mockRejectedValue(new Error('groups unavailable'))
+  render(<CanonicalGroupList onOpen={vi.fn()} />)
+
+  expect((await screen.findByRole('alert')).textContent).toContain('groups unavailable')
+  expect(requestProfile).toHaveBeenCalledTimes(1)
+})
+
 it('closes the tab and selection opened under the room name, and leaves another room open', async () => {
   const other = { room_id: 'room-2', name: 'Other crew', members: [] }
   rooms = [room, other]

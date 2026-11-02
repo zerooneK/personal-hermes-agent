@@ -125,6 +125,33 @@ function canonicalGroupViews({ connectionId, profile, roomId }: CanonicalGroupBi
 
 interface ListedRoom { binding: CanonicalGroupBinding; key: string; memberCount: number; name: string }
 
+// The list mounts during boot, often before the gateway socket finishes
+// opening; the client then fails fast with "not connected" and nothing else
+// re-runs the read. Retry that one error (as the connectors queries do).
+const CONNECTING_RETRIES = 5
+const NOT_CONNECTED_RE = /gateway is not connected/i
+
+const connectingRetryDelayMs = (attempt: number): number => Math.min(8000, 1000 * 2 ** attempt)
+
+async function discoverWhileConnecting(
+  route: CanonicalGroupRoute,
+  cancelled: () => boolean
+): ReturnType<typeof discoverCanonicalGroups> {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await discoverCanonicalGroups(route)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+
+      if (cancelled() || attempt >= CONNECTING_RETRIES || !NOT_CONNECTED_RE.test(message)) {
+        throw error
+      }
+    }
+
+    await new Promise(resolve => setTimeout(resolve, connectingRetryDelayMs(attempt)))
+  }
+}
+
 /** Disband on the room's own gateway, then retire it everywhere this window shows it.
  *  A refusal rejects before anything is dropped, so the row stays and the confirm shows why. */
 async function disbandListedRoom(room: ListedRoom, doneMessage: string): Promise<void> {
@@ -149,7 +176,7 @@ export function CanonicalGroupList({ onOpen }: { onOpen: (key: string, origin: C
     setError('')
     void (async () => {
       const route = captureCanonicalGroupRoute()
-      const result = await discoverCanonicalGroups(route)
+      const result = await discoverWhileConnecting(route, () => cancelled)
 
       if (!cancelled) {
         setRooms(result.rooms.map(room => ({
